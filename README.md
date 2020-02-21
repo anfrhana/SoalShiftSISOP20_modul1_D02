@@ -89,14 +89,16 @@ upper=ABCDEFGHIJKLMNOPQRSTUVWXYZ
 upper=$upper$upper
 
 name=$(echo "$1" | tr -d '.txt')
-jam=$(date +"%k")
-#amt=$(stat -c %y $1 | grep -oP '(?<=[^ ] ).*(?=:.*:)')
-echo "$amt"
-rename=$(echo $name | tr "${upper:$jam:26}${lower:$jam:26}" "${upper:0:26}${lower:0:26}")
+#jam=$(date +"%k")
+time=$(stat -c %y $1 | grep -oP '(?<=[^ ] ).*(?=:.*:)')
+echo "$time"
+rename=$(echo $name | tr "${upper:$time:26}${lower:$time:26}" "${upper:0:26}${lower:0:26}")
 
 mv $1 $rename.txt
 ```
 sama seperti pada ekripsi, hanya saja set pertama dan kedua dibalik, sehingga pergeseran substring yang terjadi juga terbalik dan file akan kembali ke nama sebelum di enkripsi.
+
+``` time=$(stat -c %y $1 | grep -oP '(?<=[^ ] ).*(?=:.*:)')``` berfungsi untuk mengambil data jam ketika file sebelumnya dibuat atau di akses.
 
 **Soal 3**
 ___
