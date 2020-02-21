@@ -126,6 +126,16 @@ done
 mkdir duplicate 
 mkdir kenangan
 
+awk '{ printf("%s;%02d\n", $2, i + 1); i += 1 }' location.log | sort -n -k1 > file.log
+
+awk -F ';' '{ i = $2+0; 
+		if( L == $1 ){ 
+			move = " mv pdkt_kusuma_" i " duplicate/duplicate_" i; } 
+  		else {
+			  L = $1; 
+			  move = " mv pdkt_kusuma_" i " kenangan/kenangan_" i ; }
+				system(move); }' file.log 
+
 for namafile in *.log; 
 do 
 	mv "$namafile" "${namafile%.log}.log.bak"
@@ -148,7 +158,19 @@ mkdir duplicate
 mkdir kenangan
 ```
 Membuat file kenangan dan duplicate
+```
+awk '{ printf("%s;%02d\n", $2, i + 1); i += 1 }' location.log | sort -n -k1 > file.log
+```
 
+```
+awk -F ';' '{ i = $2+0; 
+		if( L == $1 ){ 
+			move = " mv pdkt_kusuma_" i " duplicate/duplicate_" i; } 
+  		else {
+			  L = $1; 
+			  move = " mv pdkt_kusuma_" i " kenangan/kenangan_" i ; }
+				system(move); }' file.log 
+```
 ```
 for namafile in *.log; 
 do 
