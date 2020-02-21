@@ -151,13 +151,13 @@ Program untuk mendownload file dari link yang telah ada dan di looping sebanyak 
 ```
 cat wget.log | grep Location: > location.log
 ```
-mengcopy tiap isi yang diterima asd.log kedalam location.log
+Berfungsi mengcopy tiap isi yang diterima asd.log kedalam location.log
 
 ```
 mkdir duplicate 
 mkdir kenangan
 ```
-Membuat file kenangan dan duplicate
+Untuk membuat file kenangan dan duplicate
 ```
 awk '{ printf("%s;%02d\n", $2, i + 1); i += 1 }' location.log | sort -n -k1 > file.log
 ```
@@ -177,9 +177,9 @@ awk -F ';' '{ i = $2+0;
 			  move = " mv pdkt_kusuma_" i " kenangan/kenangan_" i ; }
 				system(move); }' file.log 
 ```
-```i = $2+0;``` berfungsi untuk menghilangkan 0 di depan angka index.
 
 Dilakukan awk pada file file.log dengan membandingkan perbaris string yang telah di urutkan pada awk sebelumnya. Apabila sama maka akan masuk ke kondisi if dan file di pindah kan ke folder duplicate. Apa bila string yang dibandingkan tidak sama maka file akan dipindahkan ke folder kenangan.
+```i = $2+0;``` berfungsi untuk menghilangkan 0 di depan angka index.
 
 ```system(move)``` berfungsi untuk menjalankan ```move```
 
