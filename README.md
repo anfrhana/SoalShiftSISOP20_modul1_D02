@@ -125,6 +125,11 @@ done
 
 mkdir duplicate 
 mkdir kenangan
+
+for namafile in *.log; 
+do 
+	mv "$namafile" "${namafile%.log}.log.bak"
+done 
 ```
 
 ```
@@ -143,6 +148,14 @@ mkdir duplicate
 mkdir kenangan
 ```
 Membuat file kenangan dan duplicate
+
+```
+for namafile in *.log; 
+do 
+	mv "$namafile" "${namafile%.log}.log.bak"
+done 
+```
+untuk mengubah semua namafile berekstensi .log menjadi ekstensi .log.bak
 ___
 untuk menjalankan script dimulai setiap 8 jam sekali dimulai jam 6.05 kecuali hari sabtu, dibuat cron job berikut:
 
