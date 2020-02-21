@@ -111,7 +111,8 @@ mkdir duplicate
 mkdir kenangan
 ```
 
-```wget -O pdkt_kusuma_$i -o asd.log  https://loremflickr.com/320/240/cat 
+```
+wget -O pdkt_kusuma_$i -o asd.log  https://loremflickr.com/320/240/cat 
 	cat asd.log >> wget.log
 ```
 Program untuk mendownload file dari link yang telah ada dan di looping sebanyak 28 kali.
