@@ -143,3 +143,11 @@ mkdir duplicate
 mkdir kenangan
 ```
 Membuat file kenangan dan duplicate
+___
+untuk menjalankan script dimulai setiap 8 jam sekali dimulai jam 06:50 kecuali hari sabtu, dibuat cron job berikut:
+
+``` 5 6,14,22 * * 0-5 /home/soal3.sh```
+
+``` 5 6,14,22 * * 0-5``` merupakan format untuk menjalankan script 8 jam sekali dimulai jam 06:50 kecuali hari sabtu.
+```/home/soal3.sh``` merupakan lokasi file.
+
