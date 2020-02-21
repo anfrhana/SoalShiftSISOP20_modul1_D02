@@ -13,6 +13,47 @@ c. Tampilkan 10 produk (product name) yang memiliki keuntungan (profit) paling s
 Whits memohon kepada kalian yang sudah jago mengolah data untuk mengerjakan laporan tersebut.
 *Gunakan Awk dan Command pendukung
 
+	Pada soal nomor 1.a kita diminta untuk mencari region mana yang memiliki keuntungan atau profit yang paling sedikit dimana semua data diambil dari "Sample-Superstore.tsv".
+	
+	echo " 1.a : Wilayah bagian(Region) yang memiliki profit paling sedikit"
+
+region=$(awk -F $'	' '
+         NR == 1 {next}
+         { a[$13] += $21 }
+         END { for (b in a) { printf "%s %.4f\n", b, a[i]} }
+         ' Sample-Superstore.tsv | sort -n | awk '{print $1}' | head -1)
+
+echo  "	$region"
+
+	Untuk 1.b kita diminta menampilkan 2 negara bagian (state) yang memiliki keuntungan (profit) paling sedikit berdasarkan hasil poin soal 1.a
+
+	echo -e "\n 1.b : 2 Negara bagian(State) yang memiliki profit paling sedikit"
+
+state=$(awk -v region="$region" -F $'	' '
+        NR == 1 {next}
+        ( $13 == region ) { a[$11] += $21 }
+        END { for (b in a) { printf "%s %.4f\n", b, a[b]} }
+        ' Sample-Superstore.tsv | sort -nk2 | awk '{print $1}' | head -2)
+
+state1=$(echo -e "$state" | sed -n '1p')
+state2=$(echo -e "$state" | sed -n '2p')
+
+echo "	- $state1"
+echo "	- $state2"
+
+	Untuk 1.c kita diminta menampilkan 10  produk (product name) yang memiliki keuntungan (profit) paling sedikit berdasarkan hasil dari negara bagian (state) yang dihasilkan di poin 1.b
+	
+	echo -e "\n 1.c : 10 produk dengan profit paling sedikit berdasarkan poin 1.b"
+
+product=$(awk -v state1="$state1" -v state2="$state2" -F '	' '
+        NR == 1 {next}
+        ( $11 == state1 ) || ( $11 == state2 ) { a[$17] += $21 }
+        END {for (b in a) {printf "	- %s:%.4f\n", b, a[b]}}
+        ' Sample-Superstore.tsv | sort -t $":" -nk2 | awk -F: '{print $1}' | head -10 )
+
+echo  "$product"
+	
+	
 **Soal 2**
 ___
 Pada suatu siang, laptop Randolf dan Afairuzr dibajak oleh seseorang dan kehilangan
