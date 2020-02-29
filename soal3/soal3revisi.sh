@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for ((i=1; i<20;i++))
+for ((i=1; i<29;i++))
 do
 	wget -O pdkt_kusuma_$i -o asd.log  https://loremflickr.com/320/240/cat 
 	cat asd.log >> wget.log
