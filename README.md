@@ -77,15 +77,22 @@ HINT: enkripsi yang digunakan adalah caesar cipher.
 
 **Program untuk mengenerate random password dan menyimpan dalam sebuah file berekstensi .txt**
 ```
-#!/bin/bash 
-if [[ $1 =~ ^[a-zA-Z]+$ ]] 
+#!/bin/bash
+ 
+if [[ $1 =~ ^[a-zA-Z]+$ ]]
 then
-	dd if=/dev/urandom|tr -dc A-Za-z0-9|head -c 28 >> $1.txt
+	dd if=/dev/urandom|tr -dc 'A-Z'|head -c 1 >> $1.txt
+	dd if=/dev/urandom|tr -dc 'a-z'|head -c 1 >> $1.txt
+	dd if=/dev/urandom|tr -dc '0-9'|head -c 1 >> $1.txt
+	
 else
 	echo "error"
 fi
 ```
-``` dd if=/dev/urandom|tr -dc A-Za-z0-9|head -c 28 >> $1.txt ``` berfungsi untuk mengenerate random password yang otomatis akan di simpan kedalam sebuah file .txt yang nama nya telah ditulis dalam bentuk argumen.
+Berikut untuk menggenerate random password dengan syarat password hanya harus terdiri dari A-Z, a-z, 0-9 yang kemudian otomatis akan disimpan kedalam sebuah file .txt yang namanya telah diinputkan melalui argumen.
+	```dd if=/dev/urandom|tr -dc 'A-Z'|head -c 1 >> $1.txt```
+	```dd if=/dev/urandom|tr -dc 'a-z'|head -c 1 >> $1.txt```
+	```dd if=/dev/urandom|tr -dc '0-9'|head -c 1 >> $1.txt``` 
 
 ```if [[ $1 =~ ^[a-zA-Z]+$ ]]``` pembuatan kondisi dimana program akan mencetak error bila tidak memenuhi kodisi nama argumen yang mengandung karakter selain a-z dan A-Z
 
@@ -99,7 +106,7 @@ upper=ABCDEFGHIJKLMNOPQRSTUVWXYZ
 upper=$upper$upper
 
 name=$(echo "$1" | tr -d '.txt')
-jam=$(date +"%k")
+jam=$(stat -c %y $1 | grep -oP '(?<=[^ ] ).*(?=:.*:)')
 rename=$(echo $name | tr "${upper:0:26}${lower:0:26}" "${upper:$jam:26}${lower:$jam:26}")
 
 mv $1 $rename.txt
@@ -114,7 +121,7 @@ Pembuatan dua variable berisi urutan alphabet kecil dan kapital sebanyak dua kal
 
 ```name=$(echo "$1" | tr -d '.txt')``` mengambil hanya nama argumennya saja agar ekstensi file (.txt) tidak ikut terenkripsi.
 
-```jam=$(date +"%k")``` mengambil angka pada jam file dibuat.
+```jam=$(stat -c %y $1 | grep -oP '(?<=[^ ] ).*(?=:.*:)')``` mengambil angka pada jam file dibuat.
 
 ```rename=$(echo $name | tr "${upper:0:26}${lower:0:26}" "${upper:$jam:26}${lower:$jam:26}")``` merename nama file dengan menggeser masing masing huruf sebanyak jam pada saat file dibuat dengan melakukan caesar chiper dengan cara membuat dua set urutan karakter. ```"${upper:0:26}``` untuk mengambil substring A-Z, ```${lower:0:26}``` untuk mengambil substring a-z.```"${upper:$jam:26}${lower:$jam:26}")``` menggeser substring susuai jam.
 
@@ -156,7 +163,7 @@ c. Maka dari itu buatlah sebuah script untuk mengidentifikasi gambar yang identi
 ```
 #!/bin/bash
 
-for ((i=0; i<28;i++))
+for ((i=1; i<20;i++))
 do
 	wget -O pdkt_kusuma_$i -o asd.log  https://loremflickr.com/320/240/cat 
 	cat asd.log >> wget.log
@@ -168,24 +175,22 @@ mkdir duplicate
 mkdir kenangan
 
 awk '{ printf("%s;%02d\n", $2, i + 1); i += 1 }' location.log | sort -n -k1 > file.log
-
-awk -F ';' '{ i = $2+0; 
+count1=$(ls duplicate/ |awk -F '_' '{print $2}' | sort -rn | head -1)
+count2=$(ls kenangan/ |awk -F '_' '{print $2}' | sort -rn | head -1)
+awk -F ';' -v count1=$count1 -v count2=$count2 '{ i = $2+0; 
 		if( L == $1 ){ 
-			move = " mv pdkt_kusuma_" i " duplicate/duplicate_" i; } 
+			
+			move = " mv pdkt_kusuma_" i " duplicate/duplicate_" count1+1; count1++; } 
   		else {
 			  L = $1; 
-			  move = " mv pdkt_kusuma_" i " kenangan/kenangan_" i ; }
+			
+			  move = " mv pdkt_kusuma_" i " kenangan/kenangan_" count2+1 ; count2++; }
 				system(move); }' file.log 
 
 for namafile in *.log; 
 do 
 	mv "$namafile" "${namafile%.log}.log.bak"
-done 
-```
-
-```
-wget -O pdkt_kusuma_$i -o asd.log  https://loremflickr.com/320/240/cat 
-	cat asd.log >> wget.log
+done
 ```
 Program untuk mendownload file dari link yang telah ada dan di looping sebanyak 28 kali.
 
@@ -200,6 +205,11 @@ mkdir kenangan
 ```
 Untuk membuat file kenangan dan duplicate
 ```
+count1=$(ls duplicate/ |awk -F '_' '{print $2}' | sort -rn | head -1)
+count2=$(ls kenangan/ |awk -F '_' '{print $2}' | sort -rn | head -1)
+```
+Berfungsi untuk membuat variable count yang akan menyimpan ideks angka terakhir nama file yang ada di dalam folder.
+```
 awk '{ printf("%s;%02d\n", $2, i + 1); i += 1 }' location.log | sort -n -k1 > file.log
 ```
 Berungsi untuk mengambil string dari location.log kemudian diletakkan di file file.log dengan menambahkan index dengan format ```%02d``` dengan separator ```;```.
@@ -208,18 +218,22 @@ Berungsi untuk mengambil string dari location.log kemudian diletakkan di file fi
 ```-n ``` untuk mengurutkan secara numerik string
 
 ```-k1``` untuk mengurutkan pada kolom ke 1
-
-```
-awk -F ';' '{ i = $2+0; 
+```awk -F ';' -v count1=$count1 -v count2=$count2 '{ i = $2+0; 
 		if( L == $1 ){ 
-			move = " mv pdkt_kusuma_" i " duplicate/duplicate_" i; } 
+			move = " mv pdkt_kusuma_" i " duplicate/duplicate_" count1+1; count1++; } 
   		else {
 			  L = $1; 
-			  move = " mv pdkt_kusuma_" i " kenangan/kenangan_" i ; }
-				system(move); }' file.log 
-```
-
+			
+			  move = " mv pdkt_kusuma_" i " kenangan/kenangan_" count2+1 ; count2++; }
+				system(move); }' file.log
+for namafile in *.log; 
+do 
+	mv "$namafile" "${namafile%.log}.log.bak"
+done 
+````
 Dilakukan awk pada file file.log dengan membandingkan perbaris string yang telah di urutkan pada awk sebelumnya. Apabila sama maka akan masuk ke kondisi if dan file di pindah kan ke folder duplicate. Apa bila string yang dibandingkan tidak sama maka file akan dipindahkan ke folder kenangan.
+
+
 ```i = $2+0;``` berfungsi untuk menghilangkan 0 di depan angka index.
 
 ```system(move)``` berfungsi untuk menjalankan ```move```
